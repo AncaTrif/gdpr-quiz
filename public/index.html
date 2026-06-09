@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GDPR & EU AI Act — Technical Interview Prep</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f1a; color: #e8e8f0; min-height: 100vh; padding: 24px 16px; }
+  .app { max-width: 800px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 32px; }
+  header h1 { font-size: 1.8rem; font-weight: 700; background: linear-gradient(135deg, #7c6af5, #4fc3f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 6px; }
+  header p { color: #888; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.6; }
+  .stats { display: flex; gap: 12px; justify-content: center; margin-bottom: 28px; flex-wrap: wrap; }
+  .stat { background: #1a1a2e; border: 1px solid #2a2a40; border-radius: 10px; padding: 12px 20px; text-align: center; min-width: 100px; }
+  .stat-value { font-size: 1.6rem; font-weight: 700; }
+  .stat-label { font-size: 0.7rem; color: #888; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.06em; }
+  .stat-value.green { color: #4ade80; }
+  .stat-value.red { color: #f87171; }
+  .stat-value.blue { color: #60a5fa; }
+  .progress-bar { background: #1a1a2e; border-radius: 99px; height: 8px; margin-bottom: 28px; overflow: hidden; border: 1px solid #2a2a40; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #7c6af5, #4fc3f7); transition: width 0.4s ease; }
+  .card { background: #1a1a2e; border: 1px solid #2a2a40; border-radius: 16px; padding: 28px; margin-bottom: 20px; }
+  .tag { display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 12px; border-radius: 6px; margin-bottom: 16px; }
+  .tag.gdpr { background: #1e3a5f; color: #60a5fa; }
+  .tag.euai { background: #2d1e5f; color: #a78bfa; }
+  .tag.both { background: #1e3a3a; color: #34d399; }
+  .tag.bonus { background: #3a2a00; color: #fbbf24; }
+  .question-text { font-size: 1.1rem; line-height: 1.7; margin-bottom: 24px; font-weight: 500; color: #f0f0f0; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn { background: #0f0f1a; border: 1.5px solid #2a2a40; border-radius: 12px; padding: 14px 18px; text-align: left; cursor: pointer; font-size: 0.93rem; line-height: 1.6; color: #e8e8f0; transition: all 0.15s; display: flex; align-items: flex-start; gap: 14px; }
+  .option-btn:hover:not(:disabled) { border-color: #7c6af5; background: #14142a; transform: translateX(2px); }
+  .option-key { font-weight: 800; color: #7c6af5; min-width: 20px; flex-shrink: 0; }
+  .option-btn.correct { border-color: #4ade80; background: #052012; }
+  .option-btn.correct .option-key { color: #4ade80; }
+  .option-btn.wrong { border-color: #f87171; background: #200808; }
+  .option-btn.wrong .option-key { color: #f87171; }
+  .option-btn.dimmed { opacity: 0.35; cursor: default; }
+  .feedback { margin-top: 24px; border-radius: 12px; overflow: hidden; display: none; }
+  .feedback.show { display: block; }
+  .feedback-header { padding: 14px 18px 12px; font-weight: 700; font-size: 0.96rem; border-radius: 12px 12px 0 0; }
+  .feedback.correct .feedback-header { background: #052012; border: 1px solid #166534; border-bottom: none; color: #4ade80; }
+  .feedback.wrong .feedback-header { background: #200808; border: 1px solid #7f1d1d; border-bottom: none; color: #f87171; }
+  .feedback-sections { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-radius: 0 0 12px 12px; }
+  .feedback-section { padding: 14px 16px; font-size: 0.88rem; line-height: 1.65; }
+  .feedback-section:first-child { border-right: 1px solid; }
+  .feedback.correct .feedback-sections { background: #031a0d; border: 1px solid #166534; border-top: none; }
+  .feedback.correct .feedback-section { color: #86efac; }
+  .feedback.correct .feedback-section:first-child { border-right-color: #166534; }
+  .feedback.wrong .feedback-sections { background: #160404; border: 1px solid #7f1d1d; border-top: none; }
+  .feedback.wrong .feedback-section { color: #fca5a5; }
+  .feedback.wrong .feedback-section:first-child { border-right-color: #7f1d1d; }
+  .section-label { display: block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 7px; opacity: 0.75; }
+  .next-btn { margin-top: 24px; background: linear-gradient(135deg, #7c6af5, #4fc3f7); border: none; border-radius: 10px; padding: 13px 32px; color: #fff; font-size: 0.96rem; font-weight: 600; cursor: pointer; display: none; }
+  .next-btn:hover { opacity: 0.88; }
+  .next-btn.show { display: inline-block; }
+  .done-screen { text-align: center; padding: 48px 24px; display: none; }
+  .done-screen.show { display: block; }
+  .done-screen h2 { font-size: 2.2rem; margin-bottom: 16px; }
+  .done-msg { font-size: 1.05rem; color: #b0b0b8; margin-bottom: 28px; line-height: 1.6; }
+  .restart-btn { background: linear-gradient(135deg, #7c6af5, #4fc3f7); border: none; border-radius: 10px; padding: 14px 40px; color: #fff; font-size: 1rem; font-weight: 700; cursor: pointer; }
+  .q-counter { color: #666; font-size: 0.82rem; margin-bottom: 12px; font-weight: 500; }
+  .bonus-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .bonus-btn { background: #1a1400; border: 1.5px solid #78350f; border-radius: 10px; padding: 10px 20px; color: #fbbf24; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 8px; }
+  .bonus-btn:hover:not(:disabled) { background: #2a2000; border-color: #fbbf24; }
+  .bonus-btn:disabled { opacity: 0.5; cursor: default; }
+  .bonus-status { font-size: 0.82rem; color: #888; }
+  .bonus-count { background: #1a1a2e; border: 1px solid #2a2a40; border-radius: 6px; padding: 4px 10px; font-size: 0.78rem; color: #fbbf24; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>GDPR &amp; EU AI Act</h1>
+    <p>A tool that helps individuals and teams get comfortable with GDPR and EU AI Act compliance.<br/>50 carefully sourced questions grounded in the law itself.</p>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-value blue" id="s-total">0</div><div class="stat-label">Answered</div></div>
+    <div class="stat"><div class="stat-value green" id="s-correct">0</div><div class="stat-label">Correct</div></div>
+    <div class="stat"><div class="stat-value red" id="s-wrong">0</div><div class="stat-label">Wrong</div></div>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+
+  <div class="card" id="quiz-card">
+    <div class="q-counter" id="q-counter"></div>
+    <span class="tag" id="q-tag"></span>
+    <div class="question-text" id="q-text"></div>
+    <div class="options" id="q-options"></div>
+    <div class="feedback" id="q-feedback"></div>
+    <button class="next-btn" id="next-btn">Next question →</button>
+  </div>
+
+  <div class="card done-screen" id="done-screen">
+    <h2>Complete!</h2>
+    <p class="done-msg" id="done-msg"></p>
+    <button class="restart-btn" onclick="restart()">Start over</button>
+  </div>
+
+  <div class="bonus-bar">
+    <button class="bonus-btn" id="bonus-btn" onclick="generateBonus()">🎲 Generate 10 bonus questions</button>
+    <span class="bonus-status" id="bonus-status"></span>
+    <span class="bonus-count" id="bonus-count" style="display:none"></span>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {tag:"gdpr",q:"Under GDPR Art. 5(1)(e), data retention for AI must be based on what principle?",opts:["Business value and competitive advantage","Documented necessity aligned with stated purpose","Regulatory minimum of five years storage","Storage duration determined by the vendor"],correct:1,law:"Art. 5(1)(e): storage limitation principle.",take:"Define retention tied to purpose. Automate deletion. 'Just in case' retention violates this."},
+  {tag:"euai",q:"What does EU AI Act Art. 12 require for high-risk AI system events?",opts:["Monthly summary reports to the regulator","Automatic logging of decisions and risks; at least six months retention","Annual certifications from third-party auditors","Real-time dashboards visible to all users"],correct:1,law:"Art. 12: automatic event logging throughout system lifetime.",take:"Build logging from day one. Six-month retention is mandatory minimum."},
+  {tag:"both",q:"GDPR Art. 33 requires notification of a breach to the DPA within what timeframe?",opts:["30 days of discovery","72 hours of becoming aware","Immediately upon suspicion","Within one business day"],correct:1,law:"Art. 33(1): notify without undue delay within 72 hours.",take:"Document triage process now. The 72-hour clock is strict."},
+  {tag:"gdpr",q:"Under GDPR Art. 4(5), pseudonymised data is classified as what in legal terms?",opts:["Anonymous data outside GDPR scope","Personal data still requiring GDPR protections","Encrypted data needing no further safeguards","Commercial data exempt from regulation"],correct:1,law:"Art. 4(5): pseudonymisation replaces identifiers; data remains personal.",take:"Pseudonymised ≠ anonymised. Only irreversible anonymisation exits GDPR."},
+  {tag:"euai",q:"EU AI Act Art. 11 prohibits what technique in all AI systems?",opts:["Using data older than two years","Subliminal or manipulative techniques designed to distort behavior","Deployment without prior testing","Training on non-EU data sources"],correct:1,law:"Art. 11: prohibition on subliminal and manipulative techniques.",take:"This is an outright ban. Dark patterns violate this article."},
+  {tag:"gdpr",q:"Art. 6 specifies that lawful processing requires which of the following?",opts:["General statement in privacy policy","One of six lawful bases; consent, contract, law, vital interest, public task, or legitimate interest","Only consent; no alternative basis","Publisher discretion with no requirement"],correct:1,law:"Art. 6(1): lawful basis is mandatory.",take:"Every system needs documented basis. Legitimate interest needs balancing test."},
+  {tag:"euai",q:"EU AI Act Art. 26 assigns what responsibilities to 'deployers' of high-risk AI?",opts:["None; only providers are liable","Implement oversight, monitor performance, report incidents, inform users","Conduct initial testing before deployment","Maintain the AI system code and model"],correct:1,law:"Art. 26: deployers have mandatory obligations around oversight.",take:"Internal teams are deployers. You cannot outsource compliance to vendors."},
+  {tag:"gdpr",q:"GDPR Art. 5(2) requires controllers to demonstrate what?",opts:["Trust in vendor security claims","Compliance at any time; maintain documentation","That breaches will never occur","Regulatory licenses and certifications"],correct:1,law:"Art. 5(2): accountability principle requires demonstrable compliance.",take:"Keep records: DPIAs, DPAs, consent logs, training, audits."},
+  {tag:"gdpr",q:"Art. 28 requires what written document for data processors handling your data?",opts:["Generic confidentiality agreement","Data Processing Agreement specifying scope, obligations, liability","Verbal assurance of compliance","Annual compliance certification"],correct:1,law:"Art. 28(3): mandatory written DPA with every processor.",take:"Generic T&Cs don't include mandatory Art. 28 clauses."},
+  {tag:"euai",q:"EU AI Act Art. 43 requires reassessment of conformity when what occurs?",opts:["Annual compliance audit cycle","Substantial modifications affecting compliance or intended purpose","A single customer complaint about the system","Random regulatory inspection requests"],correct:1,law:"Art. 43(4): substantial modifications trigger reassessment.",take:"Retraining on new data, new populations, changed risk profile are substantial."},
+  {tag:"gdpr",q:"GDPR Art. 22(3) grants individuals a right to human intervention when what applies?",opts:["Any automated processing of their data","Solely automated decisions producing legal or similarly significant effects","Recommendations that differ from user expectations","Decisions reviewed by AI systems only"],correct:1,law:"Art. 22(3): human intervention right for significant automated decisions.",take:"Opportunity-gating decisions require human review capability."},
+  {tag:"euai",q:"EU AI Act Art. 50 requires users be informed about AI interaction in what situation?",opts:["Only when requested by the user","Unless it is obvious from context of the interaction","Only after a decision has been made","Only in the privacy policy disclosure"],correct:1,law:"Art. 50: transparency unless obvious from context.",take:"A banner 'Powered by AI' usually suffices. Hiding it in T&Cs doesn't."},
+  {tag:"gdpr",q:"What is the primary purpose of GDPR Art. 5(1)(c) 'data minimisation'?",opts:["Reducing storage costs for the business","Collecting only data necessary for purpose; no excess","Limiting data to special-category only","Minimizing vendor access to data"],correct:1,law:"Art. 5(1)(c): data must be adequate, relevant, limited to necessity.",take:"Design pipelines to reject irrelevant fields at ingestion."},
+  {tag:"both",q:"When a user requests deletion under GDPR Art. 17, what is your core obligation?",opts:["Deny if data is embedded in model weights","Assess feasibility; explain if technical infeasibility documented","Archive data instead of deleting","Offer pseudonymisation as alternative"],correct:1,law:"Art. 17: right to erasure applies unless technical infeasibility.",take:"Be transparent about barriers. Consider architecture supporting deletion."},
+  {tag:"gdpr",q:"What does GDPR Art. 35 Data Protection Impact Assessment cover for AI?",opts:["Optional risk review for transparency","Mandatory for high-risk processing: documents purpose, risks, safeguards, necessity","Required only for special-category data","Assessment only after a breach occurs"],correct:1,law:"Art. 35: DPIA mandatory for high-risk processing.",take:"Thorough DPIAs prevent violations and fines. Evidence of governance."},
+  {tag:"euai",q:"EU AI Act Art. 15 requires what for bias in high-risk AI systems?",opts:["Acknowledging bias exists and accepting it","Design and test to identify and minimize unjustified disparities across groups","Only removing obviously discriminatory features","Annual third-party fairness audits only"],correct:1,law:"Art. 15: mitigation of unjustified biases.",take:"Bias mitigation is a design obligation. Test across demographic groups."},
+  {tag:"gdpr",q:"GDPR Art. 21 grants the right to object to processing based on what?",opts:["Only the right to be contacted for marketing","Processing for legitimate interest; absolute right for direct marketing","Applies only to sensitive personal data","Only if the processing causes financial loss"],correct:1,law:"Art. 21(1)-(2): right to object to legitimate interest and marketing.",take:"Objection halts processing. Continuing profiles after objection violates the right."},
+  {tag:"euai",q:"EU AI Act Art. 10(3) requires examination of training data for what?",opts:["Overall accuracy and performance metrics","Potential biases that could lead to discrimination or unfairness","Data completeness and file format integrity","Compliance with vendor licensing requirements"],correct:1,law:"Art. 10(3): training data examined for biases.",take:"Bias in training data translates to bias in outputs."},
+  {tag:"gdpr",q:"Under GDPR Art. 6(4), secondary use of data for a new purpose requires what?",opts:["Notification to data subjects after the fact","Compatibility assessment; new basis if incompatible","Automatic approval after privacy policy update","No requirement if purpose is similar"],correct:1,law:"Art. 6(4): compatibility test required; new basis if incompatible.",take:"Using support data for sales prediction often fails compatibility test."},
+  {tag:"euai",q:"EU AI Act Art. 72 requires what for high-risk AI systems throughout their lifetime?",opts:["Annual snapshot reports only","Active post-market monitoring collecting system performance and risk data","Static documentation created at deployment","Periodic audits by external certification bodies"],correct:1,law:"Art. 72: post-market monitoring system throughout lifetime.",take:"PMM is ongoing. Budget for dashboards, drift detection, incident investigation."},
+  {tag:"gdpr",q:"GDPR Art. 37 requires a Data Protection Officer in what scenario?",opts:["Only for companies exceeding 250 employees","For public authorities and those with systematic monitoring or special-category processing","Only when processing health data","Recommended but never mandated"],correct:1,law:"Art. 37(1): DPO mandatory for public authorities and core activities.",take:"AI ops often involve systematic monitoring. A DPO is likely mandatory."},
+  {tag:"euai",q:"EU AI Act Art. 14 requires what design capability for high-risk AI systems?",opts:["Optional human review if anomalies detected","Design enabling human understanding, override, or disabling","Humans validate output after autonomous decisions","Oversight only during initial deployment phase"],correct:1,law:"Art. 14: design for effective human oversight with intervention.",take:"Oversight is active design requirement, not reactive feature."},
+  {tag:"gdpr",q:"What does GDPR Art. 32 require for security of personal data?",opts:["Only encryption satisfies security requirements","Technical and organizational measures appropriate to risk level","Bank-grade security regardless of data sensitivity","Monthly penetration testing of all systems"],correct:1,law:"Art. 32: measures appropriate to risk level.",take:"Encrypt, control access, log activity, train staff. Proportionate to risk."},
+  {tag:"euai",q:"EU AI Act Art. 53 applies transparency requirements to what systems?",opts:["Only high-risk AI models","All general-purpose AI models; publish documentation and training data summary","Transparent requirements only for public sector deployment","GPAI models exempt from transparency"],correct:1,law:"Art. 53: all GPAI providers must publish documentation.",take:"Even 'low-risk' GPAI faces transparency requirements."},
+  {tag:"gdpr",q:"GDPR Art. 30 Records of Processing Activities must document what?",opts:["Summary in privacy policy format","Detailed records per activity: purposes, data categories, legal basis, recipients, retention, security","Only data inventory without activity details","Documentation required only after a breach"],correct:1,law:"Art. 30(1): detailed ROPA for all processing activities.",take:"ROPA is your audit trail. Organize per activity. Update as system evolves."},
+  {tag:"euai",q:"EU AI Act Art. 71 requires what before deploying high-risk AI systems?",opts:["Internal risk assessment approval only","Register the system in the EU database before market placement","Third-party certification from a notified body","Public announcement of deployment plans"],correct:1,law:"Art. 71: registration in EU database mandatory before placement.",take:"Registration creates public audit trail of what high-risk AI is deployed."},
+  {tag:"gdpr",q:"What is the key distinction between anonymisation and pseudonymisation in GDPR?",opts:["Anonymisation is reversible; pseudonymisation is not","Anonymisation is irreversible (exits GDPR); pseudonymisation is reversible (remains personal data)","Pseudonymisation is stronger than anonymisation","Both are equivalent legal concepts"],correct:1,law:"Art. 4(1),(5): anonymisation is irreversible.",take:"True anonymisation is rare. Most 'anonymised' data is pseudonymised."},
+  {tag:"euai",q:"EU AI Act Art. 55 requires what for systemic-risk GPAI models?",opts:["Standard post-market monitoring like other systems","Adversarial testing (red-teaming) per AI Office guidelines","Annual certification by the AI Office","Enhanced transparency alone is sufficient"],correct:1,law:"Art. 55: red-teaming for systemic-risk GPAI.",take:"Red-teaming is mandatory for very large models."},
+  {tag:"gdpr",q:"GDPR Art. 6(1)(f) allows legitimate interest as lawful basis, but requires what?",opts:["Simple statement that the interest is legitimate","Documented balancing test of interest vs. individual rights and expectations","Explicit consent from affected individuals","No additional requirement beyond stating the basis"],correct:1,law:"Art. 6(4): balancing test required for legitimate interest.",take:"Document balancing thoroughly. Weak balancing fails audits."},
+  {tag:"euai",q:"EU AI Act Art. 86 grants affected individuals what rights for high-risk AI decisions?",opts:["No specific rights; algorithmic decisions are business logic","Right to explanation and human review of the decision","Only the right to request error correction","Rights only if the decision causes measurable harm"],correct:1,law:"Art. 86: explanation and human review for high-risk decisions.",take:"Opportunity-gating AI needs appeals workflows."},
+  {tag:"gdpr",q:"GDPR Art. 4(1) defines personal data as what?",opts:["Only information explicitly identified by name or number","Any information relating to identified or identifiable individuals","Aggregated data from multiple individuals","Only data subjects proactively provide"],correct:1,law:"Art. 4(1): broad definition including identifiable persons.",take:"Inferred data about someone is personal data. Device IDs tied to behavior are personal data."},
+  {tag:"euai",q:"EU AI Act Art. 10(3) specifies training data must have what properties?",opts:["Maximum size and diversity constraints","Relevant, representative, free of errors, complete, appropriate properties; examined for bias","Approval from a data governance committee","Certification from the data provider"],correct:1,law:"Art. 10(3): specific training data requirements.",take:"Data quality directly affects AI fairness and compliance."},
+  {tag:"gdpr",q:"GDPR Art. 7(4) addresses consent in what context?",opts:["All processing requires explicit consent always","Consent problematic when power imbalances exist (e.g., employer-employee)","Implied consent through continued use is valid","Consent is not required if disclosed in privacy policy"],correct:1,law:"Art. 7(4), Recital 43: freely given consent; power imbalance issues noted.",take:"Employee consent to AI training on work data is legally suspect."},
+  {tag:"euai",q:"EU AI Act Art. 3(3)-(4) defines provider and deployer roles as what?",opts:["Providers develop; deployers are end-users with no obligations","Providers develop/place on market; deployers use under authority with obligations","Deployers are in EU; providers are outside","Roles determine liability but not compliance duty"],correct:1,law:"Art. 3(3)-(4): clear role definition with separate obligations.",take:"Both provider and deployer have compliance duties."},
+  {tag:"gdpr",q:"Under GDPR Art. 25, what does 'data protection by design' require?",opts:["Privacy policies written before system implementation","Privacy and security requirements built into architecture from conception","Optional add-on implemented after core system deployment","Privacy considerations only for special-category data"],correct:1,law:"Art. 25: data protection by design and by default.",take:"Architect for privacy from day one. Don't retrofit."},
+  {tag:"euai",q:"EU AI Act Art. 17 requires what for quality management of high-risk AI?",opts:["Optional documentation of system performance","Documented procedures for development, monitoring, and improvement throughout lifetime","Annual third-party quality certification","Compliance review only at initial deployment"],correct:1,law:"Art. 17: quality management system throughout lifetime.",take:"Quality management is ongoing operational requirement."},
+  {tag:"gdpr",q:"What is the purpose of GDPR Art. 35 Data Protection Impact Assessment?",opts:["Optional documentation for compliance files","Mandatory risk analysis to prevent violations before they occur","Post-incident investigation tool after breaches","Annual checklist to demonstrate due diligence"],correct:1,law:"Art. 35: mandatory for high-risk processing.",take:"DPIA should be living document updated as system evolves."},
+  {tag:"euai",q:"EU AI Act Art. 13 requires what in instructions for use of high-risk AI?",opts:["Marketing description of AI capabilities","Intended purpose, performance specs, requirements, limitations, human oversight design","Technical architecture documentation for engineers","Compliance checklist for auditors"],correct:1,law:"Art. 13, Annex V: detailed instructions for use mandatory.",take:"Instructions enable deployers to meet their Art. 26 obligations."},
+  {tag:"gdpr",q:"GDPR Art. 33 requires notification to whom when a breach is discovered?",opts:["Only to affected individuals","To the supervisory authority within 72 hours if risk exists","To the company's legal team and insurance provider","To the data source or vendor who provided the data"],correct:1,law:"Art. 33: notify DPA within 72 hours of becoming aware.",take:"Triage breaches quickly. Document your risk assessment."},
+  {tag:"euai",q:"EU AI Act Art. 51 defines systemic risk GPAI as what?",opts:["Any AI model with more than one million parameters","Models with high capabilities (>10^25 FLOPs) or Commission designation","Models processing personal data at scale","Models making automated decisions affecting users"],correct:1,law:"Art. 51: systemic risk defined by capability threshold or designation.",take:"The threshold is very high. Few models trigger systemic obligations."},
+  {tag:"gdpr",q:"What does GDPR Art. 15 require when a user exercises their right of access?",opts:["Summary of processing in non-technical language","Actual data, purposes, legal basis, recipients, retention, and decision-making logic","Only data explicitly provided by the user","Data older than one year need not be provided"],correct:1,law:"Art. 15: provide data and processing information in intelligible form.",take:"For AI, SAR is complex. Build export APIs to support this reliably."},
+  {tag:"euai",q:"EU AI Act Art. 43 requires what before placing high-risk AI on the market?",opts:["Internal risk assessment approval","Conformity assessment demonstrating compliance with AI Act requirements","Voluntary third-party certification","Customer feedback and satisfaction testing"],correct:1,law:"Art. 43: conformity assessment mandatory before market placement.",take:"For most high-risk AI, self-assessment applies. Some need notified bodies."},
+  {tag:"gdpr",q:"Under GDPR, what does 'special-category data' include?",opts:["Any customer contact information or transaction records","Genetic, biometric for ID purposes, health, race, religion, political views, union membership, sex life data","Data marked as sensitive by the company","Personal data held by large organizations"],correct:1,law:"Art. 9: special categories require explicit legal basis.",take:"Processing requires Art. 9(2) exception AND Art. 32 safeguards."},
+  {tag:"euai",q:"EU AI Act Art. 16 requires what for high-risk AI decisions affecting individuals?",opts:["System must always make the correct decision","No automatically re-identified decisions allowed without human verification","Decisions must be explainable to technical experts","Decisions must be approved by end users first"],correct:1,law:"Art. 16: high-risk decisions must involve human verification.",take:"Credit decisions must have human sign-off, not algorithmic approval alone."},
+  {tag:"gdpr",q:"GDPR Art. 21(2) grants what right specifically for direct marketing?",opts:["Right to request correction of data","Absolute right to object; no balancing test required","Right to access reasons for marketing contact","Right only if prior explicit consent was given"],correct:1,law:"Art. 21(2): absolute right to object to direct marketing.",take:"Objection is binding. Continuing contact violates the right."},
+  {tag:"euai",q:"EU AI Act requires what documentation for all high-risk AI systems (Annex IV)?",opts:["Optional engineering notes for internal use","Detailed technical documentation covering design, data, testing, performance, limitations, oversight","Marketing materials and user guides","Compliance certification from third parties only"],correct:1,law:"Annex IV: mandatory technical documentation.",take:"Documentation is primary audit trail. Keep it current."},
+  {tag:"gdpr",q:"What must organisations do per GDPR Art. 30 for Records of Processing?",opts:["Keep one general privacy notice covering all processing","Maintain detailed, specific records organized by processing activity","Document only major processing activities","Create records only after regulatory requests"],correct:1,law:"Art. 30: detailed ROPA for each processing activity.",take:"Organize per activity: training, inference, monitoring, deletion."},
+  {tag:"euai",q:"EU AI Act Art. 72 post-market monitoring must track what throughout system lifetime?",opts:["Only customer satisfaction metrics","System performance, drift, fairness, incidents, emerging risks","Compliance with initial conformity assessment criteria only","User feedback collected annually"],correct:1,law:"Art. 72: active collection and analysis of performance and risk data.",take:"Build monitoring dashboards. Track fairness metrics, not just accuracy."},
+  {tag:"gdpr",q:"GDPR Art. 32 requires what for safeguarding personal data?",opts:["Only encryption of stored data satisfies requirements","Encryption, access control, logging, staff training, incident response appropriate to risk","Industry-standard security tools regardless of actual risk level","Annual security audits with external penetration testing"],correct:1,law:"Art. 32: measures proportionate to risk level.",take:"Design security architecture matching your actual risk profile."},
+  {tag:"euai",q:"EU AI Act Art. 99 addresses what when violations of the regulation occur?",opts:["Criminal penalties for individual executives","Administrative fines up to €30M or 6% turnover; reduced for cooperation","Mandatory system shutdown during investigation","Automatic license revocation for violating organisations"],correct:1,law:"Art. 99-100: fines consider cooperation and remediation.",take:"Self-reported violations with good-faith fix result in lower fines."},
+  {tag:"gdpr",q:"When a data subject requests access under GDPR Art. 15, what is your timeframe?",opts:["No deadline; respond when convenient","One month from request without undue delay; extendable two months for complex requests","Three business days for urgent requests","Within the same business day"],correct:1,law:"Art. 12(3): one month deadline is mandatory.",take:"Establish processes to meet deadline. Escalate complex requests early."},
+];
+
+let queue = [];
+let answered = 0;
+let correct = 0;
+let wrong = 0;
+let currentQ = null;
+let answered_flag = false;
+let bonusCount = 0;
+let totalQuestions = QUESTIONS.length;
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function restart() {
+  queue = shuffle([...QUESTIONS]);
+  answered = 0;
+  correct = 0;
+  wrong = 0;
+  bonusCount = 0;
+  totalQuestions = QUESTIONS.length;
+  document.getElementById('done-screen').classList.remove('show');
+  document.getElementById('quiz-card').style.display = '';
+  document.getElementById('bonus-count').style.display = 'none';
+  updateStats();
+  nextQuestion();
+}
+
+function updateStats() {
+  document.getElementById('s-total').textContent = answered;
+  document.getElementById('s-correct').textContent = correct;
+  document.getElementById('s-wrong').textContent = wrong;
+  const pct = Math.min(100, Math.round((answered / totalQuestions) * 100));
+  document.getElementById('progress').style.width = pct + '%';
+}
+
+function nextQuestion() {
+  answered_flag = false;
+  if (queue.length === 0) {
+    showDone();
+    return;
+  }
+  currentQ = queue.shift();
+  renderQuestion(currentQ);
+}
+
+function renderQuestion(q) {
+  const qNum = answered + 1;
+  document.getElementById('q-counter').textContent = `Question ${qNum} of ${totalQuestions}`;
+
+  const tag = document.getElementById('q-tag');
+  const isBonus = q._bonus;
+  if (isBonus) {
+    tag.className = 'tag bonus';
+    tag.textContent = q.tag === 'gdpr' ? '✨ Bonus · GDPR' : q.tag === 'euai' ? '✨ Bonus · EU AI Act' : '✨ Bonus · GDPR + EU AI Act';
+  } else {
+    tag.className = 'tag ' + q.tag;
+    tag.textContent = q.tag === 'gdpr' ? 'GDPR' : q.tag === 'euai' ? 'EU AI Act' : 'GDPR + EU AI Act';
+  }
+
+  document.getElementById('q-text').textContent = q.q;
+
+  const labels = ['A', 'B', 'C', 'D'];
+  const optionsEl = document.getElementById('q-options');
+  optionsEl.innerHTML = '';
+
+  const optionsWithIndex = q.opts.map((opt, i) => ({ opt, idx: i }));
+  shuffle(optionsWithIndex);
+  const newCorrectIndex = optionsWithIndex.findIndex(o => o.idx === q.correct);
+
+  optionsWithIndex.forEach((item, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-key">${labels[i]}.</span><span>${item.opt}</span>`;
+    btn.addEventListener('click', () => handleAnswer(i, newCorrectIndex, q));
+    optionsEl.appendChild(btn);
+  });
+
+  document.getElementById('q-feedback').className = 'feedback';
+  document.getElementById('q-feedback').innerHTML = '';
+  document.getElementById('next-btn').className = 'next-btn';
+}
+
+function handleAnswer(chosen, correctIdx, q) {
+  if (answered_flag) return;
+  answered_flag = true;
+  answered++;
+
+  const optBtns = document.querySelectorAll('.option-btn');
+  optBtns.forEach(b => b.disabled = true);
+
+  const isCorrect = chosen === correctIdx;
+  if (isCorrect) correct++;
+  else wrong++;
+
+  optBtns.forEach((btn, i) => {
+    if (i === correctIdx) btn.classList.add('correct');
+    else if (i === chosen && !isCorrect) btn.classList.add('wrong');
+    else btn.classList.add('dimmed');
+  });
+
+  const labels = ['A', 'B', 'C', 'D'];
+  const fb = document.getElementById('q-feedback');
+  const cls = isCorrect ? 'correct' : 'wrong';
+  const header = isCorrect ? '✓ Correct' : `✗ Incorrect — ${labels[correctIdx]} is correct`;
+
+  fb.className = `feedback ${cls} show`;
+  fb.innerHTML = `
+    <div class="feedback-header">${header}</div>
+    <div class="feedback-sections">
+      <div class="feedback-section">
+        <span class="section-label">The Law</span>
+        ${q.law}
+      </div>
+      <div class="feedback-section">
+        <span class="section-label">My Take</span>
+        ${q.take}
+      </div>
+    </div>`;
+
+  document.getElementById('next-btn').classList.add('show');
+  updateStats();
+}
+
+document.getElementById('next-btn').addEventListener('click', nextQuestion);
+
+function showDone() {
+  document.getElementById('quiz-card').style.display = 'none';
+  const done = document.getElementById('done-screen');
+  done.classList.add('show');
+  const pct = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+  let grade = pct >= 85 ? 'Excellent — you\'re comfortable with the core concepts.' : pct >= 70 ? 'Very good — solid understanding of the material.' : pct >= 50 ? 'Good progress — review the key areas and try again.' : 'Keep going — revisit the areas that didn\'t click.';
+  document.getElementById('done-msg').textContent = `You scored ${correct} / ${answered} (${pct}%). ${grade}`;
+}
+
+async function generateBonus() {
+  const btn = document.getElementById('bonus-btn');
+  const status = document.getElementById('bonus-status');
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Generating 10 questions…';
+  status.textContent = '';
+
+  const results = await Promise.allSettled(
+    Array.from({ length: 10 }, () => fetch('/api/bonus-question').then(r => {
+      if (!r.ok) throw new Error('Server error ' + r.status);
+      return r.json();
+    }))
+  );
+
+  let added = 0;
+  results.forEach(r => {
+    if (r.status === 'fulfilled') {
+      const q = r.value;
+      if (q.q && q.opts && q.opts.length === 4 && q.correct != null) {
+        q._bonus = true;
+        queue.push(q);
+        bonusCount++;
+        totalQuestions++;
+        added++;
+      }
+    }
+  });
+
+  btn.disabled = false;
+  btn.textContent = '🎲 Generate 10 bonus questions';
+
+  if (added > 0) {
+    const countEl = document.getElementById('bonus-count');
+    countEl.textContent = `+${bonusCount} bonus`;
+    countEl.style.display = 'inline-block';
+    status.textContent = `${added} bonus question${added === 1 ? '' : 's'} added to queue!`;
+  } else {
+    status.textContent = 'Could not generate questions. Try again.';
+  }
+  setTimeout(() => { status.textContent = ''; }, 3000);
+}
+
+restart();
+</script>
+</body>
+</html>
